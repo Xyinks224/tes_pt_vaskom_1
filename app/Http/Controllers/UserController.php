@@ -10,24 +10,29 @@ use function Laravel\Prompts\error;
 
 class UserController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('oauth');
+    // }
+
     public function index(Request $request) {
         $users = User::get();
 
         if ($request->search) {
             $users = User::where('name', 'LIKE', "%$request->search%")->orwhere('email', 'LIKE', "%$request->search%")->get();
         }
-        return $this->success('Products Found', $users, 201);
+        return $this->success('Users Found', $users, 201);
     }
 
     public function store(Request $request) {
         $this->validateRequest($request);
         $input = $request->all();
         $user = User::create([
-                    'email' => $input['email'],
-                    'name' => $input['name'],
-                    'role' => $input['role'],
-                    'password'=> Hash::make($request->get('password'))
-                ]);
+            'email' => $input['email'],
+            'name' => $input['name'],
+            'role' => $input['role'],
+            'password'=> Hash::make($request->get('password'))
+        ]);
 
         return $this->success('User '.$user->name.' has been created', $user, 201);
     }
@@ -71,5 +76,12 @@ class UserController extends Controller
             'role' => 'required'
         ];
         $this->validate($request, $rules);
+    }
+
+    public function logout (Request $request) {
+        $token = $request->user()->token();
+        $token->revoke();
+        $response = ['message' => 'You have been successfully logged out!'];
+        return response($response, 200);
     }
 }

@@ -17,16 +17,21 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-// Users
 $router->get('/users', 'UserController@index');
-$router->post('/user/store', 'UserController@store');
-$router->get('/user/show/{id}', 'UserController@show');
-$router->put('/user/update/{id}', 'UserController@update');
-$router->delete('/user/delete/{id}', 'UserController@destroy');
-
-// Product
 $router->get('/products','ProductController@index');
-$router->post('/product/store','ProductController@store');
-$router->get('/product/show/{id}','ProductController@show');
-$router->put('/product/update/{id}', 'ProductController@update');
-$router->delete('/product/delete/{id}', 'ProductController@destroy');
+
+
+$router->group(['middleware' => 'auth'], function() use (&$router){
+    $router->post('/user/store', 'UserController@store');
+    $router->get('/user/show/{id}', 'UserController@show');
+    $router->put('/user/update/{id}', 'UserController@update');
+    $router->delete('/user/delete/{id}', 'UserController@destroy');
+
+    // Product
+    $router->post('/product/store','ProductController@store');
+    $router->get('/product/show/{id}','ProductController@show');
+    $router->put('/product/update/{id}', 'ProductController@update');
+    $router->delete('/product/delete/{id}', 'ProductController@destroy');
+ });
+
+
